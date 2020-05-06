@@ -187,3 +187,4 @@ android/.idea/
 android/android.iml
 android/gradle/
 android/gradlew
+.vscode/settings.json
