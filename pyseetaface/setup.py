@@ -3,7 +3,7 @@
 '''
 @Author: ArlenCai
 @Date: 2020-03-14 23:32:16
-@LastEditTime: 2020-03-14 23:37:56
+@LastEditTime: 2020-05-06 22:25:18
 '''
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
@@ -30,21 +30,21 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'seetaface',
+        'libseetaface',
         ['src/seetaface.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True),
-            'seeta',
+            'include',
         ],
         library_dirs = [
-            '../build/bin'
+            '../build/lib'
         ],
         libraries = [
             'SeetaFaceDetector', 'SeetaFaceLandmarker', 'SeetaFaceRecognizer', 'SeetaFaceTracker', 'SeetaNet', 'SeetaQualityAssessor'
         ],
-        extra_link_args = ['-fopenmp','-lrt','-lpthread','-lm','-ldl'],
+        extra_link_args = ['-fopenmp','-lpthread','-lm','-ldl'],
 
         language='c++'
     ),
@@ -124,6 +124,10 @@ setup(
     install_requires=['pybind11>=2.4',],
     setup_requires=['pybind11>=2.4',],
     cmdclass={'build_ext': BuildExt},
+    packages=['seetaface', 'seetaface.model'],
+    package_data={
+        'seetaface.model': ['*.dat'],
+    },
     zip_safe=False,
     include_package_data =True,
 )
