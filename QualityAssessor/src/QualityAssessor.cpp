@@ -58,8 +58,8 @@ namespace seeta {
          * @return return true if lightness in (low, high)
          */
         bool check_lightness(const SeetaImageData &image, const SeetaRect &face,
-                float low = 40, float high = 180) {
-            auto score = evaluate_lightness(image, face);
+                float &score, float low = 40, float high = 180) {
+            score = evaluate_lightness(image, face);
             // std::cout << "lightness: " << score << std::endl;
             return score > low && score < high;
         }
@@ -70,8 +70,9 @@ namespace seeta {
          * @param size min face size
          * @return return true if face.width > size
          */
-        bool check_face_size(const SeetaRect &face, int size = 80) {
+        bool check_face_size(const SeetaRect &face, int &face_size, int size = 80) {
 			// std::cout << "face.width: " << face.width << std::endl;
+            face_size = face.width;
             return face.width > size;
         }
 
@@ -82,11 +83,11 @@ namespace seeta {
          * @param points 5 landmarks
          * @return if pose ok
          */
-        bool check_pose(const SeetaImageData &image, const SeetaRect &face, const SeetaPointF *points) {
+        bool check_pose(const SeetaImageData &image, const SeetaRect &face, const SeetaPointF *points,
+                        float &roll, float &yaw, float &pitch) {
             static const float roll0 = 1 / 3.0f;
             static const float yaw0 = 0.5f;
             static const float pitch0 = 0.5f;
-            float roll, yaw, pitch;
             evaluate_pose(image, face, points, roll, yaw, pitch);
 			//  std::cout << "roll: " << roll << ", " << "yaw: " << yaw << ", " << "pitch: " << pitch << std::endl;
             return roll < roll0 && yaw < yaw0 && pitch < pitch0;
@@ -109,10 +110,15 @@ namespace seeta {
         float QualityAssessor::evaluate(const SeetaImageData &image, const SeetaRect &face,
                                         const SeetaPointF *points) const {
 			// std::cout << "=============================" << std::endl;
+            float lightness;
+            int face_size;
+            float roll; 
+            float yaw; 
+            float pitch;
             float clarity;
-            if (check_lightness(image, face)
-                && check_face_size(face, getFaceSize())
-                && check_pose(image, face, points)
+            if (check_lightness(image, face, lightness)
+                && check_face_size(face, face_size, getFaceSize())
+                && check_pose(image, face, points, roll, yaw, pitch)
                 && check_clarity(image, face, clarity)) {
                 return clarity;
             } else {
@@ -123,16 +129,21 @@ namespace seeta {
         int QualityAssessor::evaluate(const SeetaImageData &image,
                                       const SeetaRect &face,
                                       const SeetaPointF *points,
-                                      float &score) const
+                                      float &lightness,
+                                      int &face_size,
+                                      float &roll, 
+                                      float &yaw, 
+                                      float &pitch,
+                                      float &clarity) const
         {
             int ret = ERROR_OK;
-            if(!check_lightness(image, face))
+            if(!check_lightness(image, face, lightness))
                 ret |= ERROR_LIGHTNESS;
-            if(!check_face_size(face, getFaceSize()))
+            if(!check_face_size(face, face_size, getFaceSize()))
                 ret |= ERROR_FACE_SIZE;
-            if(!check_pose(image, face, points))
+            if(!check_pose(image, face, points, roll, yaw, pitch))
                 ret |= ERROR_FACE_POSE;
-            if(!check_clarity(image, face, score))
+            if(!check_clarity(image, face, clarity))
                 ret |= ERROR_CLARITY;
             return ret;
         }

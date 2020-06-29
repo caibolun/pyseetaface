@@ -1,7 +1,8 @@
 /*
  * @Author: ArlenCai
  * @Date: 2020-03-11 20:41:05
- * @LastEditTime: 2020-05-07 16:52:50
+ * @LastEditors: xiaoyijia
+ * @LastEditTime: 2020-06-29 17:32:04
  */
 #pragma warning(disable: 4819)
 #include <seeta/FaceDetector.h>
@@ -196,8 +197,8 @@ class SeetaFaceAPI
 		return feat;
 	}
 
-	tuple<int, float> evaluate(pybind11::array_t<uint8_t, pybind11::array::c_style | pybind11::array::forcecast> img_array,
-			FaceRect face_rect, FaceMark face_mark, int face_size)
+	pybind11::dict evaluate(pybind11::array_t<uint8_t, pybind11::array::c_style | pybind11::array::forcecast> img_array,
+			FaceRect face_rect, FaceMark face_mark, int face_min_size)
 	{
 		SeetaImageData simage; 
 		simage.height = int(img_array.shape(0));
@@ -220,10 +221,25 @@ class SeetaFaceAPI
 			points.push_back(p);
 		}
 
-		float score=0;
-		QA.setFaceSize(face_size);
-		int ret = QA.evaluate(simage, face_pos, points.data(), score);
-		return make_tuple(ret, score);
+		float lightness;
+		int face_size;
+		float roll; 
+		float yaw; 
+		float pitch;
+		float clarity;
+		
+		QA.setFaceSize(face_min_size);
+		int ret = QA.evaluate(simage, face_pos, points.data(), lightness, face_size, roll, yaw, pitch, clarity);
+		
+		pybind11::dict res;
+		res[pybind11::str("ret")] = ret;
+		res[pybind11::str("lightness")] = lightness;
+		res[pybind11::str("face_size")] = face_size;
+		res[pybind11::str("roll")] = roll;
+		res[pybind11::str("yaw")] = yaw;
+		res[pybind11::str("pitch")] = pitch;
+		res[pybind11::str("clarity")] = clarity;
+		return res;
 	}
 		
 };

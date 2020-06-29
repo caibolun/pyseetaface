@@ -43,8 +43,14 @@ namespace seeta
              * @return ERROR_OK if is ok. other reture ERROR_CODE combination.
              */
             SEETA_API int evaluate(const SeetaImageData &image,
-                                   const SeetaRect &face,
-                                   const SeetaPointF *points, float &score) const;
+                                      const SeetaRect &face,
+                                      const SeetaPointF *points,
+                                      float &lightness,
+                                      int &face_size,
+                                      float &roll, 
+                                      float &yaw, 
+                                      float &pitch,
+                                      float &clarity) const;
             SEETA_API int setFaceSize(int size);
             SEETA_API int getFaceSize() const;
 

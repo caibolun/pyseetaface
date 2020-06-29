@@ -3,14 +3,15 @@
 '''
 @Author: ArlenCai
 @Date: 2020-03-14 23:32:16
-@LastEditTime: 2020-05-06 22:25:18
+@LastEditors: xiaoyijia
+@LastEditTime: 2020-06-29 17:31:04
 '''
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 import sys
 import setuptools
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 
 class get_pybind_include(object):
