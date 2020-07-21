@@ -3,7 +3,7 @@
 '''
 @Author: ArlenCai
 @Date: 2020-05-06 17:20:35
-@LastEditTime: 2020-05-07 17:02:11
+@LastEditTime: 2020-07-21 22:35:13
 '''
 import libseetaface
 import os
@@ -27,19 +27,38 @@ class SeetaFace(object):
         self.device = device
         self.gpu_id = gpu_id
 
+        self.detect_init = False
+        self.align81_init = False
+        self.align5_init = False
+        self.extract_init = False
         self.pipeline = libseetaface.SeetaFaceAPI()
+    
+    def init(self):
         self.pipeline.init(self.fd_path, self.fl81_path, self.fl5_path, self.fr_path, self.device, self.gpu_id)
 
+
     def detect(self, img):
+        if self.detect_init is False:
+            self.pipeline.detect_init(self.fd_path, self.device, self.gpu_id)
+            self.detect_init = True
         return self.pipeline.detect(img)
 
     def align81(self, img, rects):
+        if self.align81_init is False:
+            self.pipeline.align81_init(self.fl81_path, self.device, self.gpu_id)
+            self.align81_init = True
         return self.pipeline.align81(img, rects)
 
     def align5(self, img, rects):
+        if self.align5_init is False:
+            self.pipeline.align5_init(self.fl5_path, self.device, self.gpu_id)
+            self.align5_init = True
         return self.pipeline.align5(img, rects)
     
     def extract(self, img, rect=None, mark=None):
+        if self.extract_init is False:
+            self.pipeline.extract_init(self.fr_path, self.device, self.gpu_id)
+            self.extract_init = True
         if mark is not None:
             return self.pipeline.extract(img, mark)
         if rect is not None:

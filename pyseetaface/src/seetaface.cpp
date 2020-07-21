@@ -1,8 +1,8 @@
 /*
  * @Author: ArlenCai
  * @Date: 2020-03-11 20:41:05
- * @LastEditors: xiaoyijia
- * @LastEditTime: 2020-06-29 17:32:04
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-07-21 22:33:23
  */
 #pragma warning(disable: 4819)
 #include <seeta/FaceDetector.h>
@@ -31,8 +31,6 @@ typedef vector<float> FaceFeature;
 class SeetaFaceAPI
 {
 	protected:
-		seeta::ModelSetting::Device device;
-		int id;
 		seeta::FaceDetector *FD;
 		seeta::FaceLandmarker *FL81;
 		seeta::FaceLandmarker *FL5;
@@ -42,49 +40,60 @@ class SeetaFaceAPI
 	public:
 		SeetaFaceAPI()
 		{
-			device = seeta::ModelSetting::CPU;
-			id = 0;
+			FD = NULL;
+			FL81 = NULL;
+			FL5 = NULL;
+			FR = NULL;
 
 		}
 		~SeetaFaceAPI()
 		{
-			delete FD;
-			delete FL81;
-			delete FL5;
-			delete FR;
+			if(FD) delete FD;
+			if(FL81) delete FL81;
+			if(FL5) delete FL5;
+			if(FR) delete FR;
 		}
 
-		void init(const char* fd_model, const char* fl81_model, const char* fl5_model, const char* fr_model, const char* _device, int _gpuid)
+		void init(const char* fd_model, const char* fl81_model, const char* fl5_model, const char* fr_model, const char* _device, int id)
 		{
+			detect_init(fd_model, _device, id);
+			align81_init(fl81_model, _device, id);
+			align5_init(fl5_model, _device, id);
+			extract_init(fr_model, _device, id);
+		}
+
+		void detect_init(const char* fd_model, const char* _device, int id)
+		{
+			seeta::ModelSetting::Device device;
 			if(_device=="gpu") device = seeta::ModelSetting::GPU;
 			else device = seeta::ModelSetting::CPU;
-			id = _gpuid;
-			detect_init(fd_model);
-			align81_init(fl81_model);
-			align5_init(fl5_model);
-			extract_init(fr_model);
-		}
-
-		void detect_init(const char* fd_model)
-		{
 			seeta::ModelSetting FD_model(fd_model, device, id);
 			FD = new seeta::FaceDetector(FD_model);
 		}
 
-		void align81_init(const char* fl_model)
+		void align81_init(const char* fl_model, const char* _device, int id)
 		{
+			seeta::ModelSetting::Device device;
+			if(_device=="gpu") device = seeta::ModelSetting::GPU;
+			else device = seeta::ModelSetting::CPU;
 			seeta::ModelSetting FL_model(fl_model, device, id);
 			FL81 = new seeta::FaceLandmarker(FL_model);
 		}
 
-		void align5_init(const char* fl_model)
+		void align5_init(const char* fl_model, const char* _device, int id)
 		{
+			seeta::ModelSetting::Device device;
+			if(_device=="gpu") device = seeta::ModelSetting::GPU;
+			else device = seeta::ModelSetting::CPU;
 			seeta::ModelSetting FL_model(fl_model, device, id);
 			FL5 = new seeta::FaceLandmarker(FL_model);
 		}
 
-		void extract_init(const char* fr_model)
+		void extract_init(const char* fr_model, const char* _device, int id)
 		{
+			seeta::ModelSetting::Device device;
+			if(_device=="gpu") device = seeta::ModelSetting::GPU;
+			else device = seeta::ModelSetting::CPU;
 			seeta::ModelSetting FR_model(fr_model, device, id);
 			FR = new seeta::FaceRecognizer(FR_model);
 		}
