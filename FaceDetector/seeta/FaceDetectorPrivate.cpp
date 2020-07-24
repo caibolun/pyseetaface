@@ -695,7 +695,7 @@ FaceDetectorPrivate::FaceDetectorPrivate( const char *model_path, const CoreSize
     SetScoreThresh( p->thresh1_, p->thresh2_, p->thresh3_ );
     SetImagePyramidScaleFactor( 1.414f );
 
-    std::cout << "[INFO] FaceDetector: " << "Core size: " << p->width_limit_ << "x" << p->height_limit_ << std::endl;
+    // std::cout << "[INFO] FaceDetector: " << "Core size: " << p->width_limit_ << "x" << p->height_limit_ << std::endl;
 }
 
 
